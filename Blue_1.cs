@@ -15,7 +15,8 @@ namespace Lab_7
             protected int _votes;
 
             //свойства
-            public string Name => _name; //?? "Unknown";
+            public string Name => _name;
+            public int Votes => _votes;
 
             //конструктор
             public Response(string name)
@@ -24,7 +25,6 @@ namespace Lab_7
                 _votes = 0;
             }
 
-            //виртуальный метод для подсчета голосов
             public virtual int CountVotes(Response[] responses)
             {
                 if (responses == null || responses.Length == 0)
@@ -32,7 +32,7 @@ namespace Lab_7
                     return 0;
                 }
 
-            
+
                 foreach (var response in responses)
                 {
                     if (response.Name == this.Name)
@@ -43,7 +43,6 @@ namespace Lab_7
                 return _votes;
             }
 
-            //виртуальный метод для вывода информации
             public virtual void Print()
             {
                 Console.WriteLine($"{_name} {_votes}");
@@ -56,7 +55,7 @@ namespace Lab_7
             private string _surname;
 
             //свойство
-            public string Surname => _surname ?? "Unknown";
+            public string Surname => _surname;
 
             //конструктор
             public HumanResponse(string name, string surname) : base(name)
@@ -64,7 +63,6 @@ namespace Lab_7
                 _surname = surname;
             }
 
-            //переопределенный метод CountVotes
             public override int CountVotes(Response[] responses)
             {
                 if (responses == null || responses.Length == 0)
@@ -84,7 +82,6 @@ namespace Lab_7
                 return _votes;
             }
 
-            //переопределенный метод Print
             public override void Print()
             {
                 Console.WriteLine($"{Name} {Surname} {_votes}");

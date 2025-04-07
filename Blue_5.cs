@@ -14,6 +14,7 @@ namespace Lab_7
             private string _surname;
             private int _place;
 
+            private bool _place_set;
             public string Name => _name;
             public string Surname => _surname;
             public int Place => _place;
@@ -23,15 +24,17 @@ namespace Lab_7
                 _name = name;
                 _surname = surname;
                 _place = 0;
+                _place_set = false;
             }
 
             public void SetPlace(int place)
             {
-                if (_place != 0)
+                if (_place_set == false)
                 {
                     return;
                 }
                 _place = place;
+                _place_set = true;
             }
 
             public void Print()
@@ -53,7 +56,7 @@ namespace Lab_7
                 get
                 {
                     int sum = 0;
-                    if (_sportsmen == null)
+                    if (_sportsmen == null || _sportsmen.Length == 0)
                     {
                         return 0;
                     }
@@ -94,11 +97,11 @@ namespace Lab_7
                     {
                         return 0;
                     }
-                    for (int i = 0; i < _cnt; i++)
+                    foreach (Sportsman sportsman in _sportsmen)
                     {
-                        if (_sportsmen[i].Place < w)
+                        if (sportsman != null && sportsman.Place != 0)
                         {
-                            w = _sportsmen[i].Place;
+                            w = Math.Min(w, sportsman.Place);
                         }
                     }
                     return w;
@@ -118,16 +121,13 @@ namespace Lab_7
                 {
                     return;
                 }
-
-                if (_cnt < 6)
-                {
-                    _sportsmen[_cnt++] = sportsman;
-                }
+                if (sportsman == null) _sportsmen = new Sportsman[6];
+                _sportsmen[_cnt++] = sportsman;
             }
 
             public void Add(Sportsman[] sportsmen)
             {
-                if (_sportsmen == null || _cnt >= 6)
+                if (_sportsmen == null || _cnt >= 6 || sportsmen == null)
                 {
                     return;
                 }
@@ -137,10 +137,7 @@ namespace Lab_7
                     {
                         return;
                     }
-                    if (_cnt < 6)
-                    {
-                        _sportsmen[_cnt++] = sportsmen[i];
-                    }
+                    _sportsmen[_cnt++] = sportsmen[i];
                 }
             }
 
@@ -159,33 +156,24 @@ namespace Lab_7
                 }
             }
 
-            public void Print()
-            {
-                Console.WriteLine($"{Name} {SummaryScore} {TopPlace}");
-            }
-
             protected abstract double GetTeamStrength();
 
-            public double CalculateTeamStrength() //публичный метод для обращения к protected
+            private static Team[] Sort_strength(Team[] teams)
             {
-                return GetTeamStrength();
+                if (teams == null) return null;
+                var sortedTeams = teams.OrderByDescending(t => t.GetTeamStrength()).ToArray();
+                return sortedTeams;
             }
             public static Team GetChampion(Team[] teams)
             {
-                Team champion = null;
-                double maxStrength = double.MinValue;
+                if (teams == null) return null;
+                teams = Sort_strength(teams);
 
-                foreach (var team in teams)
-                {
-                    double strength = team.GetTeamStrength();
-                    if (strength > maxStrength)
-                    {
-                        maxStrength = strength;
-                        champion = team;
-                    }
-                }
-
-                return champion;
+                return teams[0];
+            }
+            public void Print()
+            {
+                Console.WriteLine($"{Name} {SummaryScore} {TopPlace}");
             }
         }
 
@@ -203,11 +191,11 @@ namespace Lab_7
                 }
 
                 double sumPlaces = 0;
-                int count = 0;
+                double count = 0;
 
                 foreach (var sportsman in Sportsmen)
                 {
-                    if (sportsman != null)
+                    if (sportsman != null && sportsman.Place != 0)
                     {
                         sumPlaces += sportsman.Place;
                         count++;
@@ -219,15 +207,13 @@ namespace Lab_7
                     return 0;
                 }
 
-                return 100 / (sumPlaces / count); //чем меньше среднее значение мест, тем выше сила
+                return 100.0 / (sumPlaces / count); //чем меньше среднее значение мест, тем выше сила
             }
         }
 
         public class WomanTeam : Team
         {
-            public WomanTeam(string name) : base(name)
-            {
-            }
+            public WomanTeam(string name) : base(name) { }
 
             protected override double GetTeamStrength()
             {
@@ -237,25 +223,25 @@ namespace Lab_7
                 }
 
                 double sumPlaces = 0;
-                double productPlaces = 1;
-                int count = 0;
+                double Places = 1;
+                double count = 0;
 
                 foreach (var sportsman in Sportsmen)
                 {
-                    if (sportsman != null)
+                    if (sportsman.Place != 0)
                     {
                         sumPlaces += sportsman.Place;
-                        productPlaces *= sportsman.Place;
+                        Places *= sportsman.Place;
                         count++;
                     }
                 }
 
-                if (productPlaces == 0)
+                if (Places == 0)
                 {
                     return 0;
                 }
 
-                return 100 * count / (sumPlaces * productPlaces); //чем меньше сумма и произведение мест, тем выше сила
+                return 100.0 * ((count * sumPlaces) / Places); //чем меньше сумма и произведение мест, тем выше сила
             }
         }
     }

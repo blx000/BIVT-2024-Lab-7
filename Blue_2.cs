@@ -19,6 +19,7 @@ namespace Lab_7
             //свойства
             public string Name => _name;
             public string Surname => _surname;
+
             public int[,] Marks
             {
                 get
@@ -118,10 +119,7 @@ namespace Lab_7
             {
                 get
                 {
-                    if (_participants == null) { return null; }
-                    Participant[] copyParticipants = new Participant[_participants.Length];
-                    Array.Copy(_participants, copyParticipants, _participants.Length);
-                    return copyParticipants;
+                    return _participants;
                 }
             }
 
@@ -135,28 +133,20 @@ namespace Lab_7
                 _participants = new Participant[0];
             }
 
-            //метод для добавления одного участника
             public void Add(Participant participant)
             {
+                if (_participants == null) { return; }
                 Array.Resize(ref _participants, _participants.Length + 1);
                 _participants[_participants.Length - 1] = participant;
             }
 
-            //метод для добавления нескольких участников
             public void Add(params Participant[] participants)
             {
-                int n = _participants.Length;
-                Array.Resize(ref _participants, _participants.Length + participants.Length);
-                for (int i = 0; i < participants.Length; i++)
+                if (participants == null || _participants == null) { return; }
+                foreach (Participant participant in participants)
                 {
-                    _participants[n + i] = participants[i];
+                    Add(participant);
                 }
-            }
-
-            //метод для сортировки участников по итоговому счету
-            public void SortParticipants()
-            {
-                Participant.Sort(_participants);
             }
         }
 
@@ -164,14 +154,13 @@ namespace Lab_7
         {
             //конструктор
             public WaterJump3m(string name, int bank) : base(name, bank) { }
-
-            //переопределение свойства Prize
             public override double[] Prize
             {
                 get
                 {
+                    if (Participants == null) { return null; }
                     if (Participants.Length < 3)
-                        return new double[0];
+                        return null;
 
                     double[] prizes = new double[3];
                     prizes[0] = Bank * 0.5; // 50% за первое место
@@ -187,34 +176,30 @@ namespace Lab_7
             //конструктор
             public WaterJump5m(string name, int bank) : base(name, bank) { }
 
-            //переопределение свойства Prize
             public override double[] Prize
             {
                 get
                 {
+                    if (Participants == null) { return null; }
                     if (Participants.Length < 3)
-                        return new double[0];
+                        return null;
 
-                    //сортируем участников
-                    SortParticipants();
 
-                    //определяем количество участников выше середины
-                    int topCount = Math.Min(Math.Max(Participants.Length / 2, 3), 10);
-                    double[] prizes = new double[topCount + 3];
+                    //количество участников выше середины
+                    double[] prizes = new double[Math.Max(3, Math.Min(10, Participants.Length / 2))];
 
-                    //распределение 40%, 25%, 15% за первые три места
-                    prizes[0] = Bank * 0.4;
-                    prizes[1] = Bank * 0.25;
-                    prizes[2] = Bank * 0.15;
 
-                    //распределение оставшихся 20% между участниками выше середины
-                    double remain = Bank * 0.2;
-                    double topPrize = remain / topCount;
-
-                    for (int i = 3; i < prizes.Length; i++)
+                    double dop = 1;
+                    if (prizes.Length == 10) { dop = 10; }
+                    double remain = 20.0 / dop;
+                    for (int i = 0; i < dop; i++)
                     {
-                        prizes[i] = topPrize;
+                        prizes[i] = (remain / 100) * Bank;
                     }
+                    //распределение 40%, 25%, 15% за первые три места
+                    prizes[0] += Bank * 0.4;
+                    prizes[1] += Bank * 0.25;
+                    prizes[2] += Bank * 0.15;
 
                     return prizes;
                 }

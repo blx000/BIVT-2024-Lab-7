@@ -14,6 +14,7 @@ namespace Lab_7
             private string _name;
             private string _surname;
             protected int[] _penaltytimes;
+            protected bool _is_expelled;
 
             //свойства
             public string Name => _name;
@@ -149,7 +150,10 @@ namespace Lab_7
                 {
                     return;
                 }
-
+                if (_penaltytimes.Length == 0)
+                {
+                    return;
+                }
                 Array.Resize(ref _penaltytimes, _penaltytimes.Length + 1);
                 _penaltytimes[_penaltytimes.Length - 1] = fouls;
             }
@@ -157,7 +161,7 @@ namespace Lab_7
 
         public class HockeyPlayer : Participant
         {
-            private static int _totalPenaltyTime = 0;
+            private static double _totalPenaltyTime = 0;
             private static int _num = 0;
 
             public HockeyPlayer(string name, string surname) : base(name, surname)

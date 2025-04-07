@@ -94,23 +94,21 @@ namespace Lab_7
             }
             public void Add(Team team)
             {
-                if (team as ManTeam != null)
+                if (team is ManTeam mt)
                 {
-                    if (_manNum >= 12)
+                    if (_manNum >= 12 || _manTeams == null)
                     {
                         return;
                     }
-                    if (_manTeams == null) return;
-                    _manTeams[_manNum++] = team;
+                    _manTeams[_manNum++] = mt;
                 }
-                else if (team as WomanTeam != null)
+                else if (team is WomanTeam wt)
                 {
-                    if (_womanNum >= 12)
+                    if (_womanNum >= 12 || _womanTeams == null)
                     {
                         return;
                     }
-                    if (_womanTeams == null) return;
-                    _womanTeams[_womanNum++] = team;
+                    _womanTeams[_womanNum++] = wt;
                 }
             }
 
@@ -123,22 +121,14 @@ namespace Lab_7
                     Add(team);
                 }
             }
-            public void Sort()
+            private void SortTeams(Team[] teams)
             {
-                SortTeams(_manTeams, _manNum);
-                SortTeams(_womanTeams, _womanNum);
-            }
-            private void SortTeams(Team[] teams, int count)
-            {
-                if (teams == null || count == 0) return;
+                if (teams == null) return;
 
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < teams.Length; i++)
                 {
-                    for (int j = 0; j < count - i - 1; j++)
-                    {
-                        //проверяем, что элементы не null
-                        if (teams[j] == null || teams[j + 1] == null) continue;
-
+                    for (int j = 0; j < teams.Length - i - 1; j++)
+                    {                      
                         if (teams[j].TotalScore < teams[j + 1].TotalScore)
                         {
                             (teams[j], teams[j + 1]) = (teams[j + 1], teams[j]);
@@ -146,80 +136,55 @@ namespace Lab_7
                     }
                 }
             }
+            public void Sort()
+            {
+                SortTeams(_manTeams);
+                SortTeams(_womanTeams);
+            }
+            public static void MergeTeams(Team[] teams1, Team[] teams2, Team[] teams, int size)
+            {
+                int i = 0, j = 0, k = 0;
+                while (i < teams1.Length && j < teams2.Length && i < size && j < size)
+                {
+                    if (teams1[i].TotalScore >= teams2[j].TotalScore)
+                    {
+                        teams[k++] = teams1[i++];
+                    }
+                    else
+                    {
+                        teams[k++] = teams2[j++];
+                    }
+                }
+
+                while (i < teams1.Length && i < size)
+                {
+                    teams[k++] = teams1[i++];
+                }
+                while (j < teams2.Length && j < size)
+                {
+                    teams[k++] = teams1[j++];
+                }
+            }
             public static Group Merge(Group group1, Group group2, int size)
             {
                 Group group = new Group("Финалисты");
 
-                //слияние мужских команд
                 MergeTeams(group1.ManTeams, group2.ManTeams, group._manTeams, size / 2);
-
-                //слияние женских команд
                 MergeTeams(group1.WomanTeams, group2.WomanTeams, group._womanTeams, size / 2);
 
                 return group;
-            }
-            public static void MergeTeams(Team[] teams1, Team[] teams2, Team[] mergedTeams, int size)
-            {
-                int i = 0, j = 0, k = 0;
-
-                //обрабатываем только не-null элементы
-                while (i < teams1.Length && j < teams2.Length && k < size)
-                {
-                    //пропускаем null элементы
-                    while (i < teams1.Length && teams1[i] == null) i++;
-                    while (j < teams2.Length && teams2[j] == null) j++;
-
-                    //если один из массивов закончился, выходим
-                    if (i >= teams1.Length || j >= teams2.Length) break;
-
-                    //сравниваем очки и добавляем в mergedTeams
-                    if (teams1[i].TotalScore >= teams2[j].TotalScore)
-                    {
-                        mergedTeams[k++] = teams1[i++];
-                    }
-                    else
-                    {
-                        mergedTeams[k++] = teams2[j++];
-                    }
-                }
-
-                //добавляем оставшиеся элементы из teams1
-                while (i < teams1.Length && k < size)
-                {
-                    if (teams1[i] != null)
-                    {
-                        mergedTeams[k++] = teams1[i];
-                    }
-                    i++;
-                }
-
-                //добавляем оставшиеся элементы из teams2
-                while (j < teams2.Length && k < size)
-                {
-                    if (teams2[j] != null)
-                    {
-                        mergedTeams[k++] = teams2[j];
-                    }
-                    j++;
-                }
             }
             public void Print()
             {
                 Console.WriteLine($"{_name} ");
                 foreach (Team team in _manTeams)
                 {
-                    if (team != null) 
-                    {
-                        team.Print();
-                    }
+                    team.Print();
                 }
                 Console.WriteLine();
                 foreach (Team team in _womanTeams)
                 {
-                    if (team != null) 
-                    {
-                        team.Print();
-                    }
+                    team.Print();
                 }
                 Console.WriteLine();
             }
