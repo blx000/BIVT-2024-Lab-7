@@ -61,27 +61,27 @@ namespace Lab_7
                         return 0;
                     }
 
-                    for (int i = 0; i < _sportsmen.Length; i++)
+                    foreach (var sportsman in _sportsmen)
                     {
-                        if (_sportsmen[i].Place == 1)
+                        switch (sportsman.Place)
                         {
-                            sum += 5;
-                        }
-                        if (_sportsmen[i].Place == 2)
-                        {
-                            sum += 4;
-                        }
-                        if (_sportsmen[i].Place == 3)
-                        {
-                            sum += 3;
-                        }
-                        if (_sportsmen[i].Place == 4)
-                        {
-                            sum += 2;
-                        }
-                        if (_sportsmen[i].Place == 5)
-                        {
-                            sum += 1;
+                            case 1:
+                                sum += 5;
+                                break;
+                            case 2:
+                                sum += 4;
+                                break;
+                            case 3:
+                                sum += 3;
+                                break;
+                            case 4:
+                                sum += 2;
+                                break;
+                            case 5:
+                                sum += 1;
+                                break;
+                            default:
+                                break;
                         }
                     }
                     return sum;

@@ -162,7 +162,7 @@ namespace Lab_7
                 }
                 while (j < teams2.Length && j < size)
                 {
-                    teams[k++] = teams1[j++];
+                    teams[k++] = teams2[j++];
                 }
             }
             public static Group Merge(Group group1, Group group2, int size)

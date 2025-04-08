@@ -76,12 +76,15 @@ namespace Lab_7
                 {
                     return;
                 }
-                if (_count > 1) return;
-                for (int i = 0; i <= 4; i++)
+                if (_count < 2)
                 {
-                    _marks[_count, i] = result[i];
+                    int r = 0;
+                    for (int j = 0; j < _marks.GetLength(1); j++)
+                    {
+                        _marks[_count, j] = result[r++];
+                    }
+                    _count++;
                 }
-                _count++;
             }
 
             public static void Sort(Participant[] array)
@@ -184,23 +187,17 @@ namespace Lab_7
                     if (Participants.Length < 3)
                         return null;
 
+                    double[] prizes = new double[Math.Min(Participants.Length, 10)];                   
+                    prizes[0] = Bank * 0.4;
+                    prizes[1] = Bank * 0.25;
+                    prizes[2] = Bank * 0.15;
 
-                    //количество участников выше середины
-                    double[] prizes = new double[Math.Max(3, Math.Min(10, Participants.Length / 2))];
-
-
-                    double dop = 1;
-                    if (prizes.Length == 10) { dop = 10; }
-                    double remain = 20.0 / dop;
-                    for (int i = 0; i < dop; i++)
+                    int top = Math.Min(Math.Max(Participants.Length / 2, 3), 10);
+                    double remain = 20.0 / top;
+                    for (int i = 0; i < top; i++)
                     {
                         prizes[i] = (remain / 100) * Bank;
-                    }
-                    //распределение 40%, 25%, 15% за первые три места
-                    prizes[0] += Bank * 0.4;
-                    prizes[1] += Bank * 0.25;
-                    prizes[2] += Bank * 0.15;
-
+                    }               
                     return prizes;
                 }
             }

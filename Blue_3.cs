@@ -14,8 +14,6 @@ namespace Lab_7
             private string _name;
             private string _surname;
             protected int[] _penaltytimes;
-            protected bool _is_expelled;
-
             //свойства
             public string Name => _name;
             public string Surname => _surname;
@@ -56,16 +54,16 @@ namespace Lab_7
                 {
                     if (_penaltytimes == null)
                     {
-                        return true;
+                        return false;
                     }
                     for (int i = 0; i < _penaltytimes.Length; i++)
                     {
                         if (_penaltytimes[i] == 10)
                         {
-                            return false;
+                            return true;
                         }
                     }
-                    return true;
+                    return false;
                 }
             }
 
@@ -123,24 +121,24 @@ namespace Lab_7
                 {
                     if (_penaltytimes == null || _penaltytimes.Length == 0)
                     {
-                        return true;
+                        return false;
                     }
 
                     int fouls_5 = 0;
                     for (int i = 0; i < _penaltytimes.Length; i++)
                     {
-                        if (_penaltytimes[i] == 5)
+                        if (_penaltytimes[i] >= 5)
                         {
                             fouls_5++;
                         }
                     }
 
-                    double percentfouls_5 = (double)fouls_5 / _penaltytimes.Length;
+                    if ((fouls_5 > 0.1 * _penaltytimes.Length) || (Total > _penaltytimes.Length * 2))
+                    {
+                        return true;
+                    }
 
-                    bool con1 = percentfouls_5 > 0.1; //более 10% матчей с 5 фолами
-                    bool con2 = Total > 2 * _penaltytimes.Length; //суммарное количество фолов вдвое больше, чем количество матчей
-
-                    return !(con1 && con2);
+                    return false;
                 }
             }
 
