@@ -24,17 +24,15 @@ namespace Lab_7
                 _name = name;
                 _surname = surname;
                 _place = 0;
-                _place_set = false;
             }
 
             public void SetPlace(int place)
             {
-                if (_place_set == false)
+                if (_place != 0)
                 {
                     return;
                 }
                 _place = place;
-                _place_set = true;
             }
 
             public void Print()
@@ -93,15 +91,15 @@ namespace Lab_7
                 get
                 {
                     int w = 18;
-                    if (_sportsmen == null)
+                    if (_sportsmen == null || _sportsmen.Length == 0)
                     {
                         return 0;
                     }
                     foreach (Sportsman sportsman in _sportsmen)
                     {
-                        if (sportsman != null && sportsman.Place != 0)
+                        if (sportsman.Place < w && sportsman.Place != 0)
                         {
-                            w = Math.Min(w, sportsman.Place);
+                            w = sportsman.Place;
                         }
                     }
                     return w;
@@ -127,17 +125,10 @@ namespace Lab_7
 
             public void Add(Sportsman[] sportsmen)
             {
-                if (_sportsmen == null || _cnt >= 6 || sportsmen == null)
+                if (sportsmen == null) return;
+                foreach (var sportsman in sportsmen)
                 {
-                    return;
-                }
-                for (int i = 0; i < sportsmen.Length; i++)
-                {
-                    if (_cnt >= 6)
-                    {
-                        return;
-                    }
-                    _sportsmen[_cnt++] = sportsmen[i];
+                    Add(sportsman);
                 }
             }
 
@@ -158,18 +149,24 @@ namespace Lab_7
 
             protected abstract double GetTeamStrength();
 
-            private static Team[] Sort_strength(Team[] teams)
-            {
-                if (teams == null) return null;
-                var sortedTeams = teams.OrderByDescending(t => t.GetTeamStrength()).ToArray();
-                return sortedTeams;
-            }
             public static Team GetChampion(Team[] teams)
             {
+                double mx = 0;
+                Team champ = null;
                 if (teams == null) return null;
-                teams = Sort_strength(teams);
 
-                return teams[0];
+                foreach (var team in teams)
+                {
+                    if (team == null) continue;
+                    double strength = team.GetTeamStrength();
+                    if (strength > mx)
+                    {
+                        champ = team;
+                        mx = strength;
+                    }
+                }
+
+                return champ;
             }
             public void Print()
             {
@@ -185,29 +182,19 @@ namespace Lab_7
 
             protected override double GetTeamStrength()
             {
-                if (Sportsmen == null || Sportsmen.Length == 0)
-                {
-                    return 0;
-                }
-
                 double sumPlaces = 0;
-                double count = 0;
-
+                int cnt = 0;
+                if (Sportsmen == null) return 0;
                 foreach (var sportsman in Sportsmen)
                 {
                     if (sportsman != null && sportsman.Place != 0)
                     {
                         sumPlaces += sportsman.Place;
-                        count++;
+                        cnt++;
                     }
                 }
-
-                if (count == 0)
-                {
-                    return 0;
-                }
-
-                return 100.0 / (sumPlaces / count); //чем меньше среднее значение мест, тем выше сила
+                if (cnt == 0) return 0;
+                return 100 / (sumPlaces / cnt);
             }
         }
 
@@ -217,22 +204,22 @@ namespace Lab_7
 
             protected override double GetTeamStrength()
             {
-                if (Sportsmen == null || Sportsmen.Length == 0)
+                if (Sportsmen == null)
                 {
                     return 0;
                 }
 
                 double sumPlaces = 0;
                 double Places = 1;
-                double count = 0;
+                double cnt = 0;
 
                 foreach (var sportsman in Sportsmen)
                 {
-                    if (sportsman.Place != 0)
+                    if (sportsman.Place != 0 && sportsman != null)
                     {
                         sumPlaces += sportsman.Place;
                         Places *= sportsman.Place;
-                        count++;
+                        cnt++;
                     }
                 }
 
@@ -241,7 +228,7 @@ namespace Lab_7
                     return 0;
                 }
 
-                return 100.0 * ((count * sumPlaces) / Places); //чем меньше сумма и произведение мест, тем выше сила
+                return 100.0 * ((cnt * sumPlaces) / Places);
             }
         }
     }

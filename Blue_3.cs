@@ -152,8 +152,7 @@ namespace Lab_7
                 {
                     return;
                 }
-                Array.Resize(ref _penaltytimes, _penaltytimes.Length + 1);
-                _penaltytimes[_penaltytimes.Length - 1] = fouls;
+                base.PlayMatch(fouls);
             }
         }
 
@@ -171,25 +170,26 @@ namespace Lab_7
             {
                 get
                 {
-                    if (_penaltytimes == null || _penaltytimes.Length == 0)
+                    if (_penaltytimes == null || _penaltytimes.Length == 0 || _num == 0)
                     {
-                        return true;
+                        return false;
                     }
 
-                    bool con1 = false; //хотя бы один матч с 10 минутами штрафа
                     for (int i = 0; i < _penaltytimes.Length; i++)
                     {
-                        if (_penaltytimes[i] == 10)
+                        if (_penaltytimes[i] >= 10)
                         {
-                            con1 = true;
-                            break;
+                            return true;
                         }
                     }
 
                     double avPenaltyTime = (double)_totalPenaltyTime / _num;
-                    bool con2 = Total > 0.1 * avPenaltyTime; //суммарное штрафное время больше 10% от среднего
+                    if (this.Total > avPenaltyTime * 0.1)
+                    {
+                        return true;
+                    }
 
-                    return !(con1 && con2);
+                    return false;
                 }
             }
 
@@ -199,9 +199,7 @@ namespace Lab_7
                 {
                     return;
                 }
-
-                Array.Resize(ref _penaltytimes, _penaltytimes.Length + 1);
-                _penaltytimes[_penaltytimes.Length - 1] = penaltyTime;
+                base.PlayMatch(penaltyTime);
                 _totalPenaltyTime += penaltyTime;
             }
         }
