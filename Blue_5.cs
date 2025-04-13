@@ -28,10 +28,7 @@ namespace Lab_7
 
             public void SetPlace(int place)
             {
-                if (_place != 0)
-                {
-                    return;
-                }
+                if (_place != 0) return;
                 _place = place;
             }
 
@@ -48,7 +45,15 @@ namespace Lab_7
             private int _cnt;
 
             public string Name => _name;
-            public Sportsman[] Sportsmen => _sportsmen;
+            public int Count => _cnt;
+            public Sportsman[] Sportsmen
+            {
+                get
+                {
+                    if (_sportsmen == null) return null;
+                    return _sportsmen;
+                }
+            }
             public int SummaryScore
             {
                 get
@@ -90,12 +95,12 @@ namespace Lab_7
             {
                 get
                 {
-                    int w = 18;
                     if (_sportsmen == null || _sportsmen.Length == 0)
                     {
                         return 0;
                     }
-                    foreach (Sportsman sportsman in _sportsmen)
+                    int w = 18;
+                    foreach (var sportsman in _sportsmen)
                     {
                         if (sportsman.Place < w && sportsman.Place != 0)
                         {
@@ -115,17 +120,20 @@ namespace Lab_7
 
             public void Add(Sportsman sportsman)
             {
-                if (_sportsmen == null || _cnt >= 6)
+                if (_sportsmen == null || _sportsmen.Length == 0)
                 {
                     return;
                 }
-                if (sportsman == null) _sportsmen = new Sportsman[6];
-                _sportsmen[_cnt++] = sportsman;
+                if (_cnt < 6)
+                {
+                    _sportsmen[_cnt] = sportsman;
+                    _cnt++;
+                }
             }
 
             public void Add(Sportsman[] sportsmen)
             {
-                if (sportsmen == null) return;
+                if (sportsmen == null || sportsmen.Length == 0) return;
                 foreach (var sportsman in sportsmen)
                 {
                     Add(sportsman);
@@ -134,6 +142,7 @@ namespace Lab_7
 
             public static void Sort(Team[] teams)
             {
+                if (teams == null || teams.Length == 0) return;
                 for (int i = 0; i < teams.Length - 1; i++)
                 {
                     for (int j = 0; j < teams.Length - i - 1; j++)
@@ -151,10 +160,10 @@ namespace Lab_7
 
             public static Team GetChampion(Team[] teams)
             {
-                double mx = 0;
-                Team champ = null;
-                if (teams == null) return null;
+                if (teams == null || teams.Length == 0) return null;
 
+                Team champ = teams[0];
+                double mx = champ.GetTeamStrength();
                 foreach (var team in teams)
                 {
                     if (team == null) continue;
@@ -182,9 +191,10 @@ namespace Lab_7
 
             protected override double GetTeamStrength()
             {
+                if (Sportsmen == null || Count == 0) return 0;
+
                 double sumPlaces = 0;
                 int cnt = 0;
-                if (Sportsmen == null) return 0;
                 foreach (var sportsman in Sportsmen)
                 {
                     if (sportsman != null && sportsman.Place != 0)
@@ -204,11 +214,10 @@ namespace Lab_7
 
             protected override double GetTeamStrength()
             {
-                if (Sportsmen == null)
+                if (Sportsmen == null || Count == 0)
                 {
                     return 0;
                 }
-
                 double sumPlaces = 0;
                 double Places = 1;
                 double cnt = 0;

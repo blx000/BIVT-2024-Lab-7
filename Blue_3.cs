@@ -48,7 +48,7 @@ namespace Lab_7
                 }
             }
 
-            virtual public bool IsExpelled
+            public virtual bool IsExpelled
             {
                 get
                 {
@@ -76,19 +76,21 @@ namespace Lab_7
             }
 
             //методы
-            virtual public void PlayMatch(int time)
+            public virtual void PlayMatch(int time)
             {
                 if (_penaltytimes == null)
                 {
                     return;
                 }
-                Array.Resize(ref _penaltytimes, _penaltytimes.Length + 1);
+                int[] newArray = new int[_penaltytimes.Length + 1];
+                Array.Copy(_penaltytimes, newArray, _penaltytimes.Length);
+                _penaltytimes = newArray;
                 _penaltytimes[_penaltytimes.Length - 1] = time;
             }
 
             public static void Sort(Participant[] participants)
             {
-                if (participants == null)
+                if (participants == null || participants.Length == 0)
                 {
                     return;
                 }
@@ -97,7 +99,15 @@ namespace Lab_7
                 {
                     for (int j = 0; j < participants.Length - i - 1; j++)
                     {
-                        if (participants[j + 1].Total < participants[j].Total)
+                        if (participants[j] == null)
+                        {
+                            (participants[j], participants[j + 1]) = (participants[j + 1], participants[j]);
+                        }
+                        else if (participants[j + 1] == null)
+                        {
+                            continue;
+                        }
+                        else if (participants[j].Total > participants[j + 1].Total)
                         {
                             (participants[j], participants[j + 1]) = (participants[j + 1], participants[j]);
                         }
@@ -113,7 +123,9 @@ namespace Lab_7
 
         public class BasketballPlayer : Participant
         {
-            public BasketballPlayer(string name, string surname) : base(name, surname) { }
+            public BasketballPlayer(string name, string surname) : base(name, surname) {
+                _penaltytimes = new int[0];
+            }
 
             public override bool IsExpelled
             {
@@ -163,6 +175,7 @@ namespace Lab_7
 
             public HockeyPlayer(string name, string surname) : base(name, surname)
             {
+                _penaltytimes = new int[0];
                 _num++;
             }
 
@@ -183,8 +196,8 @@ namespace Lab_7
                         }
                     }
 
-                    double avPenaltyTime = (double)_totalPenaltyTime / _num;
-                    if (this.Total > avPenaltyTime * 0.1)
+                    double avPenaltyTime = _totalPenaltyTime / _num;
+                    if (Total > avPenaltyTime * 0.1)
                     {
                         return true;
                     }
