@@ -76,15 +76,16 @@ namespace Lab_7
                 {
                     return;
                 }
-                if (_count < 2)
+                if (_count >= 2)
                 {
-                    int r = 0;
-                    for (int j = 0; j < _marks.GetLength(1); j++)
-                    {
-                        _marks[_count, j] = result[r++];
-                    }
-                    _count++;
+                    return;
                 }
+                int r = 0;
+                for (int j = 0; j <= 4; j++)
+                {
+                    _marks[_count, j] = result[r++];
+                }
+                _count++;               
             }
 
             public static void Sort(Participant[] array)
@@ -92,11 +93,11 @@ namespace Lab_7
                 if (array == null || array.Length == 0) return;
                 for (int i = 0; i < array.Length; i++)
                 {
-                    for (int j = 1; j < array.Length - i; j++)
+                    for (int j = 0; j < array.Length - i - 1; j++)
                     {
-                        if (array[j].TotalScore > array[j - 1].TotalScore)
+                        if (array[j].TotalScore < array[j + 1].TotalScore)
                         {
-                            (array[j], array[j - 1]) = (array[j - 1], array[j]);
+                            (array[j], array[j + 1]) = (array[j + 1], array[j]);
                         }
                     }
                 }
@@ -118,13 +119,7 @@ namespace Lab_7
             //свойства
             public string Name => _name;
             public int Bank => _bank;
-            public Participant[] Participants
-            {
-                get
-                {
-                    return _participants;
-                }
-            }
+            public Participant[] Participants => _participants;
 
             public abstract double[] Prize { get; }
 
@@ -139,13 +134,18 @@ namespace Lab_7
             public void Add(Participant participant)
             {
                 if (_participants == null) { return; }
-                Array.Resize(ref _participants, _participants.Length + 1);
-                _participants[_participants.Length - 1] = participant;
+                Participant[] nParticipants = new Participant[_participants.Length + 1];
+                for (int i = 0; i < _participants.Length; i++)
+                {
+                    nParticipants[i] = _participants[i];
+                }
+                nParticipants[_participants.Length] = participant;
+                _participants = nParticipants;
             }
 
             public void Add(params Participant[] participants)
             {
-                if (participants == null || _participants == null) { return; }
+                if (participants == null || _participants == null || participants.Length == 0) { return; }
                 foreach (Participant participant in participants)
                 {
                     Add(participant);
@@ -183,22 +183,26 @@ namespace Lab_7
             {
                 get
                 {
-                    if (Participants == null) { return null; }
-                    if (Participants.Length < 3)
-                        return null;
+                    int cnt = Participants.Length / 2;
 
-                    double[] prizes = new double[Math.Min(Participants.Length, 10)];                   
-                    prizes[0] = Bank * 0.4;
-                    prizes[1] = Bank * 0.25;
-                    prizes[2] = Bank * 0.15;
-
-                    int top = Math.Min(Math.Max(Participants.Length / 2, 3), 10);
-                    double remain = 20.0 / top;
-                    for (int i = 0; i < top; i++)
+                    if (cnt > 10)
                     {
-                        prizes[i] = (remain / 100) * Bank;
-                    }               
-                    return prizes;
+                        cnt = 10;
+                    } else if (cnt < 3) {
+                        return null;
+                    }
+                    
+                    double[] prize = new double[cnt];
+                    double N = (0.2 * Bank) / cnt;
+
+                    for (int i = 3; i < cnt; i++)
+                    {
+                        prize[i] = N;
+                    }
+                    prize[0] = 0.4 * Bank + N;
+                    prize[1] = 0.25 * Bank + N;
+                    prize[2] = 0.15 * Bank + N;
+                    return prize;
                 }
             }
         }
