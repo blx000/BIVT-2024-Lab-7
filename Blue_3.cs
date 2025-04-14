@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace Lab_7
 {
@@ -17,6 +20,7 @@ namespace Lab_7
             //свойства
             public string Name => _name;
             public string Surname => _surname;
+
             public int[] Penalties
             {
                 get
@@ -25,17 +29,20 @@ namespace Lab_7
                     {
                         return null;
                     }
-
                     int[] newArr = new int[_penaltytimes.Length];
-                    Array.Copy(_penaltytimes, newArr, _penaltytimes.Length);
+                    for (int i = 0; i < newArr.Length; i++)
+                    {
+                        newArr[i] = _penaltytimes[i];
+                    }
                     return newArr;
                 }
             }
+
             public int Total
             {
                 get
                 {
-                    if (_penaltytimes == null || _penaltytimes.Length == 0)
+                    if (_penaltytimes == null)
                     {
                         return 0;
                     }
@@ -47,6 +54,7 @@ namespace Lab_7
                     return sum;
                 }
             }
+
 
             public virtual bool IsExpelled
             {
@@ -66,7 +74,6 @@ namespace Lab_7
                     return false;
                 }
             }
-
             //конструкторы
             public Participant(string name, string surname)
             {
@@ -74,7 +81,6 @@ namespace Lab_7
                 _surname = surname;
                 _penaltytimes = new int[0];
             }
-
             //методы
             public virtual void PlayMatch(int time)
             {
@@ -88,33 +94,25 @@ namespace Lab_7
                 _penaltytimes[_penaltytimes.Length - 1] = time;
             }
 
-            public static void Sort(Participant[] participants)
+
+
+            public static void Sort(Participant[] array)
             {
-                if (participants == null || participants.Length == 0)
+                if (array == null || array.Length == 0)
                 {
                     return;
                 }
-
-                for (int i = 0; i < participants.Length; i++)
+                for (int i = 0; i < array.Length; i++)
                 {
-                    for (int j = 0; j < participants.Length - i - 1; j++)
+                    for (int j = 0; j < array.Length - i - 1; j++)
                     {
-                        if (participants[j] == null)
+                        if (array[j].Total > array[j + 1].Total)
                         {
-                            (participants[j], participants[j + 1]) = (participants[j + 1], participants[j]);
-                        }
-                        else if (participants[j + 1] == null)
-                        {
-                            continue;
-                        }
-                        else if (participants[j].Total > participants[j + 1].Total)
-                        {
-                            (participants[j], participants[j + 1]) = (participants[j + 1], participants[j]);
+                            (array[j], array[j + 1]) = (array[j + 1], array[j]);
                         }
                     }
                 }
             }
-
             public void Print()
             {
                 Console.WriteLine($"{Name} {Surname} {Total} {IsExpelled}");
@@ -123,7 +121,8 @@ namespace Lab_7
 
         public class BasketballPlayer : Participant
         {
-            public BasketballPlayer(string name, string surname) : base(name, surname) {
+            public BasketballPlayer(string name, string surname) : base(name, surname)
+            {
                 _penaltytimes = new int[0];
             }
 
@@ -131,11 +130,10 @@ namespace Lab_7
             {
                 get
                 {
-                    if (_penaltytimes == null || _penaltytimes.Length == 0)
+                    if (_penaltytimes == null && _penaltytimes.Length == 0)
                     {
                         return false;
                     }
-
                     int fouls_5 = 0;
                     for (int i = 0; i < _penaltytimes.Length; i++)
                     {
@@ -144,76 +142,58 @@ namespace Lab_7
                             fouls_5++;
                         }
                     }
-
-                    if ((fouls_5 > 0.1 * _penaltytimes.Length) || (Total > _penaltytimes.Length * 2))
+                    if (fouls_5 * 100 / _penaltytimes.Length > 10 || Total > 2 * _penaltytimes.Length)
                     {
                         return true;
                     }
-
                     return false;
                 }
             }
-
             public override void PlayMatch(int fouls)
             {
                 if (fouls < 0 || fouls > 5)
                 {
                     return;
                 }
-                if (_penaltytimes.Length == 0)
-                {
-                    return;
-                }
                 base.PlayMatch(fouls);
             }
         }
-
         public class HockeyPlayer : Participant
         {
-            private static double _totalPenaltyTime = 0;
-            private static int _num = 0;
-
+            private static int _totalPenaltyTime;
+            private static int _num;
             public HockeyPlayer(string name, string surname) : base(name, surname)
             {
                 _penaltytimes = new int[0];
                 _num++;
             }
-
             public override bool IsExpelled
             {
                 get
                 {
-                    if (_penaltytimes == null || _penaltytimes.Length == 0 || _num == 0)
+                    if (_penaltytimes == null || _num == 0)
                     {
                         return false;
                     }
-
-                    for (int i = 0; i < _penaltytimes.Length; i++)
+                    for (int i = 0; i < Penalties.Length; i++)
                     {
-                        if (_penaltytimes[i] >= 10)
+                        if (Penalties[i] >= 10)
                         {
                             return true;
                         }
                     }
-
-                    double avPenaltyTime = _totalPenaltyTime / _num;
-                    if (Total > avPenaltyTime * 0.1)
+                    if (Total > _totalPenaltyTime / _num / 10.0)
                     {
                         return true;
                     }
-
                     return false;
                 }
             }
-
-            public override void PlayMatch(int penaltyTime)
+            public override void PlayMatch(int penaltytime)
             {
-                if (penaltyTime < 0)
-                {
-                    return;
-                }
-                base.PlayMatch(penaltyTime);
-                _totalPenaltyTime += penaltyTime;
+                if (penaltytime < 0 || penaltytime > 10 || _penaltytimes == null) return;
+                base.PlayMatch(penaltytime);
+                _totalPenaltyTime += penaltytime;
             }
         }
     }
