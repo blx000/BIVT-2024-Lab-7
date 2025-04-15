@@ -130,7 +130,7 @@ namespace Lab_7
             {
                 get
                 {
-                    if (_penaltytimes == null && _penaltytimes.Length == 0)
+                    if (_penaltytimes == null || _penaltytimes.Length == 0)
                     {
                         return false;
                     }
