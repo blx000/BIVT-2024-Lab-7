@@ -123,7 +123,7 @@ namespace Lab_7
                 }
             }
 
-            protected Team(string name)
+            public Team(string name)
             {
                 _name = name;
                 _sportsmen = new Sportsman[6];
