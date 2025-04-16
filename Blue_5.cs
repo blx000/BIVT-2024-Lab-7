@@ -153,7 +153,7 @@ namespace Lab_7
 
             public static void Sort(Team[] teams)
             {
-                for (int i = 0; i < teams.Length - 1; i++)
+                for (int i = 0; i < teams.Length; i++)
                 {
                     for (int j = 0; j < teams.Length - i - 1; j++)
                     {
